@@ -8,8 +8,20 @@ spring:
     nacos:
       discovery:
         server-addr: 8.130.25.71:8848
+        # 阿里云OSS
+    alicloud:
+      #使用子账户
+      access-key: LTAI5tAdQXrZaMEDiEPsRZJ8
+      secret-key: e6RZIslIBRgoJN122s2iH5D95wwZeC
+      oss:
+        endpoint: https://oss-cn-shanghai.aliyuncs.com
+
+
+
   application:
     name: gulimall-product
+
+
 
 
 # MapperScan
