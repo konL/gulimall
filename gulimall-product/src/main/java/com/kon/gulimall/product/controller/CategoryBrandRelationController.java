@@ -1,14 +1,12 @@
 package com.kon.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kon.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.kon.gulimall.product.service.CategoryBrandRelationService;
@@ -29,6 +27,23 @@ import com.kon.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    /**
+     * 获取当前品牌分类列表（比如小米分类即是手机也有电视）
+     */
+
+    @GetMapping("/catelog/list")
+    public R list(@RequestParam Long brandId){
+       List<CategoryBrandRelationEntity> data=categoryBrandRelationService.list(
+               new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id",brandId)
+       );
+
+        return R.ok().put("data", data);
+    }
+
+    /**
+     *
+     */
 
     /**
      * 列表
@@ -56,7 +71,9 @@ public class CategoryBrandRelationController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
+
+        //请求参数 "brandId":1,"catelogId":2}
+		categoryBrandRelationService.saveDetail(categoryBrandRelation);
 
         return R.ok();
     }

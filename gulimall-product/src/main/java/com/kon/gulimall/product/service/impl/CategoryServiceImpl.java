@@ -1,7 +1,12 @@
 package com.kon.gulimall.product.service.impl;
 
+import com.kon.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.kon.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +20,7 @@ import com.kon.common.utils.Query;
 import com.kon.gulimall.product.dao.CategoryDao;
 import com.kon.gulimall.product.entity.CategoryEntity;
 import com.kon.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryService")
@@ -53,6 +59,48 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //TODO 1 检查当前的菜单是否被别的地方所引用
         //逻辑删除
         baseMapper.deleteBatchIds(asList);
+    }
+
+    /**
+     * 找到完整路径
+     * @param catelogId
+     * @return
+     */
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths=new ArrayList<>();
+        List<Long> parentPath=findParentPath(catelogId,paths);
+        Collections.reverse(parentPath);
+        return (Long[]) paths.toArray(new Long[parentPath.size()]);
+    }
+
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
+
+    /**
+     * 级联更新所有展示类分类名字的表
+     * @param category
+     */
+    @Transactional
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+
+        //更新关联分类表
+        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+
+
+    }
+
+    private List<Long> findParentPath(Long catelogId, List<Long> paths) {
+        paths.add(catelogId);
+        //收集路径
+        //当前分类id的分类详情，然后找到其父id
+        CategoryEntity byId=this.getById(catelogId);
+        if(byId.getParentCid()!=0){
+            findParentPath(byId.getParentCid(),paths);
+        }
+        return paths;
     }
 
 

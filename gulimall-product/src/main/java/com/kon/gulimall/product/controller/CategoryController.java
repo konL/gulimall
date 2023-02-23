@@ -46,7 +46,7 @@ public class CategoryController {
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] catIds){
         //删除之前需要判断待删除的菜单那是否被别的地方所引用。
-//		categoryService.removeByIds(Arrays.asList(catIds));
+       //categoryService.removeByIds(Arrays.asList(catIds));
 
         categoryService.removeMenuByIds(Arrays.asList(catIds));
         return R.ok();
@@ -80,7 +80,7 @@ public class CategoryController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+		categoryService.updateCascade(category);
 
         return R.ok();
     }
