@@ -1,16 +1,17 @@
 package com.kon.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.kon.gulimall.product.entity.AttrEntity;
 import com.kon.gulimall.product.entity.AttrGroupQuery;
+import com.kon.gulimall.product.service.AttrAttrgroupRelationService;
+import com.kon.gulimall.product.service.AttrService;
 import com.kon.gulimall.product.service.CategoryService;
+import com.kon.gulimall.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kon.gulimall.product.entity.AttrGroupEntity;
 import com.kon.gulimall.product.service.AttrGroupService;
@@ -35,8 +36,29 @@ public class AttrGroupController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private AttrService attrService;
 
+    /**
+     * 查询分组关联属性
+     */
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") String attrgroupId) {
+        List<AttrEntity> list = attrService.getRelationAttr(attrgroupId);
 
+        return R.ok().put("data", list);
+    }
+
+    //http://localhost:88/api/product/attrgroup/2/noattr/relation?t=1661152895484&page=1&limit=10&key=
+    /**
+     * 查询当前分类下未被关联的属性
+     */
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId,
+                            @RequestParam Map<String, Object> params){
+        PageUtils page = attrService.getNoRelationAttr(attrgroupId,params);
+        return R.ok().put("page",page);
+    }
     /**
      * 列表
      */
@@ -47,7 +69,28 @@ public class AttrGroupController {
         PageUtils page = attrGroupService.queryPage(params,catelogId);
         return R.ok().put("page", page);
     }
+//http://localhost:88/api/product/attrgroup/attr/relation/delete
+    /**
+     * 删除关联
+     */
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] vos) {
+        attrService.deleteRelation(vos);
 
+        return R.ok();
+    }
+
+    @Autowired
+    AttrAttrgroupRelationService attrAttrgroupRelationService;
+    /**
+     * 新增属性与分组的关联关系
+     */
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVoList) {
+        attrAttrgroupRelationService.saveRelationBatch(attrGroupRelationVoList);
+
+        return R.ok();
+    }
 
     /**
      * 信息
