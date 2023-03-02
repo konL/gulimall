@@ -36,6 +36,9 @@ public class AttrController {
                           @PathVariable("attrType")String type){
 
         PageUtils page = attrService.queryBaseAttrPage(params,catelogId,type);
+
+
+
         return R.ok().put("page", page);
     }
 

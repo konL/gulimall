@@ -1,5 +1,6 @@
 package com.kon.gulimall.product.vo;
 
+
 import lombok.Data;
 
 @Data
@@ -16,6 +17,10 @@ public class AttrVo {
      * 是否需要检索[0-不需要，1-需要]
      */
     private Integer searchType;
+    /**
+     * 值类型[0-为单个值，1-可以选择多个值]
+     */
+    private Integer valueType;
     /**
      * 属性图标
      */
@@ -40,15 +45,6 @@ public class AttrVo {
      * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
      */
     private Integer showDesc;
-    /**
-     * 属性分组id
-     */
+
     private Long attrGroupId;
-    /**
-     * token?
-     */
-    private Long t;
-
-    private Integer valueType;
-
 }
