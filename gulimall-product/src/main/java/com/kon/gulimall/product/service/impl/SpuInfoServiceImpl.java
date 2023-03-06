@@ -1,6 +1,6 @@
 package com.kon.gulimall.product.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+
 import com.kon.common.utils.R;
 import com.kon.gulimall.product.entity.*;
 import com.kon.gulimall.product.feign.CouponFeignService;
@@ -8,6 +8,7 @@ import com.kon.gulimall.product.service.*;
 import com.kon.common.to.SkuReductionTo;
 import com.kon.common.to.SpuBoundTo;
 import com.kon.gulimall.product.vo.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -196,6 +197,47 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         this.baseMapper.insert(infoEntity);
     }
 
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+
+        String key = (String) params.get("key");
+        //如果检索条件不为空
+        if(!StringUtils.isEmpty(key)){
+            wrapper.and((w)->{
+                w.eq("id",key).or().like("spu_name",key);
+            });
+        }
+        // status=1 and (id=1 or spu_name like xxx)
+        String status = (String) params.get("status");
+        if(!StringUtils.isEmpty(status)){
+            wrapper.eq("publish_status",status);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if(!StringUtils.isEmpty(brandId)&&!"0".equalsIgnoreCase(brandId)){
+            wrapper.eq("brand_id",brandId);
+        }
+
+        String catelogId = (String) params.get("catelogId");
+        if(!StringUtils.isEmpty(catelogId)&&!"0".equalsIgnoreCase(catelogId)){
+            wrapper.eq("catalog_id",catelogId);
+        }
+
+        /**
+         * status: 2
+         * key:
+         * brandId: 9
+         * catelogId: 225
+         */
+
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                wrapper
+        );
+
+        return new PageUtils(page);
+    }
 
 
 }
